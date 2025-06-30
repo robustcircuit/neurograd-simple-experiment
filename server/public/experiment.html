@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="js/jspsych/dist/jspsych.js"></script>
+    <script src="js/jspsych/dist/plugin-preload.js"></script>
+    <script src="js/jspsych/dist/plugin-image-button-response.js"></script>
+    <script src="js/jspsych/dist/plugin-image-keyboard-response.js"></script>
+    <script src="js/jspsych/dist/plugin-html-button-response.js"></script>
+    <script src="js/jspsych/dist/plugin-html-keyboard-response.js"></script>
+    <link rel="stylesheet" href="css/jspsych.css">
+    <link href="img/favicon.ico" rel="icon">
+</head>
+
+<body></body>
+
+<script>
+
+    // retrieve information
+
+    // name the current session
+    var basename = 'expNOWdata'
+
+    // get timestamp of initial loading of the script
+    var currDate = new Date();
+
+    //////////////////////////////////////////////////////
+    // Define experiment parameters
+    ////////////////////////////////////////////////////// 
+    // We store experiment parameters in a dedicated object
+    var expdef = {};
+
+    // define timing parameters in milliseconds (jsPsych default unit)
+    expdef["choiceMaxDuration"] = 3000;
+    expdef["feedbackDuration"] = 1000;
+    expdef["fixationDuration"] = 1000;
+
+    // define default repetition of images within blocks
+    expdef["defaultRepetition"] = 1;
+
+    // define the message displayed at the beginning of the experiment
+    expdef["experimentIntroMsg"] = "<p>In this short experiment, you will have to learn to associate " +
+        "specific images with specific response buttons, by trial and error.<br>" +
+        "The experiment is divived in blocks that correspond to different categories of images.</p>"
+    expdef["experimentIntroButton"] = ["Click here to start the experiment"]
+
+    // define the message displayed at the end of the experiment
+    expdef["experimentEndMsg"] = "<p>Thanks for participating</p>"
+    expdef["experimentEndButton"] = ["Click here to save the data"]
+
+    // define the message displayed at the beginning of each block
+    expdef["blockIntroMsg"] = "You are going to start a new block with images of "
+    expdef["blockIntroButton"] = ["Click here to start the block"]
+
+    // define the message displayed below images
+    expdef['choiceMsg'] = '<p><b>Click</b> on the correct response button for this image</p>';
+
+    // define images and messages used for feedback
+    expdef['feedbackMsg'] = ['<p>Missed! <br>Respond faster next time</p>',
+        '<p>Incorrect</p>',
+        '<p>Correct</p>',];
+
+    // define images paths for feedback
+    expdef['feedbackImg'] = ['img/missedFb.png', 'img/thumbsDown.png', 'img/thumbsUp.png']
+
+    // define the image names that will be used in the experiment
+    var imageNames = {};
+    imageNames['fruits'] = [
+        "banana",
+        "blueberry",
+        "grapefruit",
+        "kiwi",
+        "pineapple",
+        "raspberry"
+    ]
+    imageNames['vegetables'] = [
+        "beet",
+        "brussels_sprouts",
+        "carrot",
+        "eggplant",
+        "lettuce",
+        "pumpkin"
+    ]
+
+    //////////////////////////////////////////////////////
+    // Init jsPsych
+    //////////////////////////////////////////////////////
+
+    var jsPsych = initJsPsych({
+        on_finish: function () {
+            document.body.style.cursor = 'pointer';
+            var interaction_data = jsPsych
+                .data
+                .getInteractionData();
+            interaction_data.trial_tag = 'interaction';
+            jsPsych
+                .data
+                .get()
+                .push(interaction_data);
+            jsPsych
+                .data
+                .get()
+                .push({
+                    completedTask: 'RLWM_expNOW',
+                    basename: basename,
+                    starting_time: currDate
+                })
+            jsPsych
+                .data
+                .get()
+                .localSave('csv', basename + '.csv');
+        }
+    });
+
+
+    //////////////////////////////////////////////////////
+    // Generate trial list
+    ////////////////////////////////////////////////////// 
+
+    // block definition   
+    var includedCategories = ['vegetables', 'fruits'];
+    var setSizes = [3, 6];
+    var mapSR = [[0, 1, 2], [0, 1, 2, 0, 1, 2]];
+    var blockTrials = [expdef.defaultRepetition, expdef.defaultRepetition];
+
+    // prepare block shuffling
+    var blockIdx = [];
+    for (var b = 0; b <= includedCategories.length - 1; b++) {
+        blockIdx.push(b);
+    }
+    blockIdx = this.jsPsych.randomization.shuffle(blockIdx);
+
+    // loop over blocks, images and repetitions
+    trialStructure = [];
+    for (var b = 0; b <= includedCategories.length - 1; b++) {
+        // shuffle images (with respect to response mappings mapSR)
+        blockImgs = this.jsPsych.randomization.shuffle(imageNames[includedCategories[blockIdx[b]]]);
+        blockImgs = blockImgs.slice(0, setSizes[blockIdx[b]])
+        subStructure = [];
+        // loop over images in the block
+        for (var i = 0; i <= blockImgs.length - 1; i++) {
+            // loop over repetition within blocks
+            for (var r = 0; r <= blockTrials[blockIdx[b]] - 1; r++) {
+                var trialspecs = {
+                    imgCategory: includedCategories[blockIdx[b]],
+                    imgId: blockImgs[i],
+                    repetitionCount: r,
+                    correctResponse: mapSR[blockIdx[b]][i],
+                    block: b,
+                    setSize: setSizes[blockIdx[b]],
+                }
+                subStructure.push(trialspecs)
+            }
+        }
+        // randomize trials within a block
+        subStructure = this.jsPsych.randomization.shuffle(subStructure);
+        trialStructure.push(subStructure)
+    }
+    //console.log(trialStructure)
+
+    //////////////////////////////////////////////////////
+    // Generate trial objects
+    //////////////////////////////////////////////////////
+
+    var experimentIntro = {
+        type: jsPsychHtmlButtonResponse,
+        stimulus: function () {
+            return expdef.experimentIntroMsg
+        },
+        choices: expdef.experimentIntroButton,
+        response_ends_trial: true,
+    }
+
+    var blockIntro = {
+        type: jsPsychHtmlButtonResponse,
+        stimulus: function () {
+            return expdef.blockIntroMsg + includedCategories[blockIdx[blockNum]]
+        },
+        choices: expdef.blockIntroButton,
+        response_ends_trial: true,
+    }
+
+    var fixationTrial = {
+        type: jsPsychHtmlKeyboardResponse,
+        stimulus: "<p style='font-size: 3rem;'>+</p>",
+        trial_duration: expdef["fixationDuration"],
+        response_ends_trial: false,
+    }
+
+    var choiceTrial = {
+        type: jsPsychImageButtonResponse,
+        stimulus: function () {
+            var imgPath = './img/' + trialStructure[blockNum][trialNum].imgCategory + '/' +
+                trialStructure[blockNum][trialNum].imgId + '.jpg'
+            return imgPath
+        },
+        trial_duration: expdef["choiceMaxDuration"],
+        choices: ['Left', 'Middle', 'Right'],
+        prompt: expdef["choiceMsg"],
+        stimulus_width: 400,
+        maintain_aspect_ratio: true,
+        response_ends_trial: true,
+        on_start: function () {
+        },
+        on_finish: function (data) {
+            if (data.response === null) {
+                data.accuracy = -1
+            }
+            else if (data.response == trialStructure[blockNum][trialNum].correctResponse) {
+                data.accuracy = 1
+            } else {
+                data.accuracy = 0
+            }
+        }
+    }
+
+    var feedbackTrial = {
+        type: jsPsychImageKeyboardResponse,
+        stimulus: function () {
+            var lastCorrect = jsPsych.data.get().last(1).values()[0].accuracy;
+            console.log(expdef['feedbackImg'])
+            return expdef['feedbackImg'][lastCorrect + 1]
+        },
+        prompt: function () {
+            var lastCorrect = jsPsych.data.get().last(1).values()[0].accuracy;
+            return expdef['feedbackMsg'][lastCorrect + 1]
+        },
+        stimulus_width: 150,
+        maintain_aspect_ratio: true,
+        trial_duration: expdef["feedbackDuration"],
+        response_ends_trial: false,
+    }
+
+    var experimentEnd = {
+        type: jsPsychHtmlButtonResponse,
+        stimulus: function () {
+            return expdef.experimentEndMsg
+        },
+        choices: expdef.experimentEndButton,
+        response_ends_trial: true,
+    }
+
+
+    //////////////////////////////////////////////////////
+    // Create nest timelines
+    //////////////////////////////////////////////////////    
+
+    // counters
+    var trialGlobNum = 0;
+    var blockNum = 0;
+    var trialNum = 0;
+
+    // trial timeline, loops until end of block
+    var trial_timeline = {
+        timeline: [fixationTrial, choiceTrial, feedbackTrial],
+        on_timeline_start: function () {
+            tBlock = 0;
+        },
+        loop_function: function () {
+            console.log('block' + blockNum + ' and trial' + trialNum)
+            if (trialNum < trialStructure[blockNum].length - 1) {
+                trialNum++
+                return true
+            } else {
+                trialNum = 0;
+                blockNum++;
+                return false
+            }
+        }
+    }
+
+    // block timeline, loops until the end of the experiment
+    var block_timeline = {
+        timeline: [blockIntro, trial_timeline],
+        loop_function: function () {
+            if (blockNum < trialStructure.length) {
+                return true
+            } else {
+                return false
+            }
+        }
+    }
+
+    // main timeline, will only run once
+    var main_timeline = [experimentIntro, block_timeline, experimentEnd];
+
+
+    jsPsych.run(main_timeline);
+
+
+</script>
