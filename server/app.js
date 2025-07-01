@@ -21,6 +21,10 @@ app.get('/expNOW', function (request, response) {
   response.render('experiment.html');
 });
 
+app.get('/dummyRoute', function (request, response) {
+  response.render('dummy.html');
+});
+
 // set view engigne
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');

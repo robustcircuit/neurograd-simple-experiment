@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="js/jspsych/dist/jspsych.js"></script>
+    <script src="js/jspsych/dist/plugin-preload.js"></script>
+    <script src="js/jspsych/dist/plugin-image-button-response.js"></script>
+    <script src="js/jspsych/dist/plugin-image-keyboard-response.js"></script>
+    <script src="js/jspsych/dist/plugin-html-button-response.js"></script>
+    <script src="js/jspsych/dist/plugin-html-keyboard-response.js"></script>
+    <link rel="stylesheet" href="css/jspsych.css">
+</head>
+
+<body>I am dummy file</body>
+
+<script>
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    var SUBJECT = 'unknown'
+    if (urlParams.has('SUBJECT')) {SUBJECT = urlParams.get('SUBJECT'); }
+    var SUFFIX = 'unknown'
+    if (urlParams.has('SUFFIX')) {SUFFIX = '_' + urlParams.get('SUFFIX');}
+</script>

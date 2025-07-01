@@ -8,18 +8,26 @@
     <script src="js/jspsych/dist/plugin-image-keyboard-response.js"></script>
     <script src="js/jspsych/dist/plugin-html-button-response.js"></script>
     <script src="js/jspsych/dist/plugin-html-keyboard-response.js"></script>
+    <script src="js/jspsych/dist/plugin-fullscreen.js"></script>
     <link rel="stylesheet" href="css/jspsych.css">
-    <link href="img/favicon.ico" rel="icon">
 </head>
 
 <body></body>
 
+
 <script>
 
     // retrieve information
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    var SUBJECT = 'unknown'
+    if (urlParams.has('SUBJECT')) {SUBJECT = urlParams.get('SUBJECT'); }
+    var SUFFIX = 'unknown'
+    if (urlParams.has('SUFFIX')) {SUFFIX = '_' + urlParams.get('SUFFIX');}
+
 
     // name the current session
-    var basename = 'expNOWdata'
+    var basename = 'expNOW_' + SUBJECT + SUFFIX
 
     // get timestamp of initial loading of the script
     var currDate = new Date();
@@ -111,6 +119,14 @@
                 .localSave('csv', basename + '.csv');
         }
     });
+
+    var enter_fullscreen = {
+        type: jsPsychFullscreen,
+        fullscreen_mode: true,
+        message: function () {return "<p>The experiment will now go full screen.</p>"},
+        button_label: function () {return "Click here to continue"},
+    }
+    var exit_fullscreen = {type: jsPsychFullscreen, fullscreen_mode: false}
 
 
     //////////////////////////////////////////////////////
@@ -282,7 +298,7 @@
     }
 
     // main timeline, will only run once
-    var main_timeline = [experimentIntro, block_timeline, experimentEnd];
+    var main_timeline = [experimentIntro, enter_fullscreen, block_timeline, experimentEnd];
 
 
     jsPsych.run(main_timeline);
