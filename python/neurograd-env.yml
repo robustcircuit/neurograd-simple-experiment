@@ -1,0 +1,13 @@
+name: neurograd-env
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - ipykernel
+  - pandas
+  - pymongo
+  - python-dotenv
+  - pybads
+  - tqdm
+  - pyvbmc
+  - seabor
