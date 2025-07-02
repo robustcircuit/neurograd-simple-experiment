@@ -1,8 +1,9 @@
-  ipykernel
-  pandas
-  pymongo
-  python-dotenv
-  pybads
-  tqdm
-  pyvbmc
-  seaborn
+ipykernel
+pandas
+pymongo
+python-dotenv
+pybads
+tqdm
+pyvbmc
+seaborn
+
