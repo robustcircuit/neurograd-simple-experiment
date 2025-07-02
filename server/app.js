@@ -3,25 +3,23 @@ var fs = require("fs")
 var path = require("path")
 var express = require('express')
 require('dotenv').config()
-const bodyParser = require("body-parser");
 
+//////////////
 var mongoose = require("mongoose");
-
-const yourName="Romain"
+const bodyParser = require("body-parser");
+const yourCollection="UserUnknown"
 const dbSchema = new mongoose.Schema({}, {
   strict: false,
-  collection: yourName // bind schema to specific collection
+  collection: yourCollection // bind schema to specific collection
 });
-const dbModel = mongoose.model(yourName, dbSchema);
-
+const dbModel = mongoose.model(yourCollection, dbSchema);
 mongoose.connect(process.env.MONGODB_URI);
-
 var db = mongoose.connection;
-
 db.on("error", console.error.bind(console, "connection error"));
 db.once("open", function callback() {
   console.log("database opened");
 });
+//////////////
 
 // --- INSTANTIATE THE APP
 var app = express();
