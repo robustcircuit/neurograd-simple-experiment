@@ -4,6 +4,7 @@
 <head>
     <script src="js/jspsych/dist/jspsych.js"></script>
     <script src="js/jspsych/dist/plugin-fullscreen.js"></script>
+    <script src="js/jspsych/dist/plugin-image-button-response.js"></script>
 </head>
 
 <body></body>
@@ -34,8 +35,32 @@
         type: jsPsychFullscreen,
         fullscreen_mode: false,
     }
+
+    var list_imgPath=[
+        "img/fruits/banana.jpg",
+        "img/fruits/banana.jpg",
+        "img/fruits/blueberry.jpg",
+    ]
+    var imgIdx=0
+    
+    var choiceTrial = {
+        type: jsPsychImageButtonResponse,
+        stimulus: function () {
+            return list_imgPath[imgIdx]
+        },
+        trial_duration: 4000,
+        choices: ['Left', 'Middle', 'Right'],
+        prompt: "Choose a response",
+        stimulus_width: 400,
+        maintain_aspect_ratio: true,
+        response_ends_trial: true,
+        on_finish: function () {
+            imgIdx++
+        },
+    }
+
     var main_timeline = {
-        timeline: [enter_fullscreen,exit_fullscreen],
+        timeline: [enter_fullscreen,choiceTrial, choiceTrial, choiceTrial, exit_fullscreen],
         on_timeline_start: function () {
             console.log("starting experiment")
         },
