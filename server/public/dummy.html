@@ -10,6 +10,10 @@
 <body></body>
 
 <script>
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    var SUBJECT = 'unknown'
+    if (urlParams.has('SUBJECT')) {SUBJECT = urlParams.get('SUBJECT'); }
 
     var jsPsych = initJsPsych({
         on_finish: function () {
@@ -54,7 +58,8 @@
         stimulus_width: 400,
         maintain_aspect_ratio: true,
         response_ends_trial: true,
-        on_finish: function () {
+        on_finish: function (trialdata) {
+            trialdata.subjectId=SUBJECT
             imgIdx++
         },
     }

@@ -64,6 +64,6 @@ app.set('view engine', 'html');
 // START THE SERVER
 app.listen(3000, function () {
   console.log("Server running. To see the experiment that it is serving, visit the following address:");
-  console.log("http://localhost:%d/expNOW", 4000);
+  console.log("http://localhost:%d/expNOW", 3000);
 });
 
