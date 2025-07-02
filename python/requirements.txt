@@ -1,0 +1,8 @@
+  ipykernel
+  pandas
+  pymongo
+  python-dotenv
+  pybads
+  tqdm
+  pyvbmc
+  seaborn
