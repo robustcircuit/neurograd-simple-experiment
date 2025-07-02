@@ -3,21 +3,44 @@
 
 <head>
     <script src="js/jspsych/dist/jspsych.js"></script>
-    <script src="js/jspsych/dist/plugin-preload.js"></script>
-    <script src="js/jspsych/dist/plugin-image-button-response.js"></script>
-    <script src="js/jspsych/dist/plugin-image-keyboard-response.js"></script>
-    <script src="js/jspsych/dist/plugin-html-button-response.js"></script>
-    <script src="js/jspsych/dist/plugin-html-keyboard-response.js"></script>
-    <link rel="stylesheet" href="css/jspsych.css">
+    <script src="js/jspsych/dist/plugin-fullscreen.js"></script>
 </head>
 
-<body>I am dummy file</body>
+<body></body>
 
 <script>
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
-    var SUBJECT = 'unknown'
-    if (urlParams.has('SUBJECT')) {SUBJECT = urlParams.get('SUBJECT'); }
-    var SUFFIX = 'unknown'
-    if (urlParams.has('SUFFIX')) {SUFFIX = '_' + urlParams.get('SUFFIX');}
+
+    var jsPsych = initJsPsych({
+        on_finish: function () {
+            console.log("I am done, now I want to send data")
+            var logData=jsPsych
+                .data
+                .get()
+            fetch("http://localhost:3000/postData",{
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({data: logData })
+            })
+        }
+    });
+
+    var enter_fullscreen = {
+        type: jsPsychFullscreen,
+        fullscreen_mode: true,
+        message: function () {return "<p>The experiment will now go full screen.</p>"},
+        button_label: function () {return "Click here to continue"},
+    }
+    var exit_fullscreen = {
+        type: jsPsychFullscreen,
+        fullscreen_mode: false,
+    }
+    var main_timeline = {
+        timeline: [enter_fullscreen,exit_fullscreen],
+        on_timeline_start: function () {
+            console.log("starting experiment")
+        },
+    }
+
+    jsPsych.run([main_timeline])
+
 </script>
