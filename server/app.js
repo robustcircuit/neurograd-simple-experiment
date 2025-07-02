@@ -6,7 +6,9 @@ require('dotenv').config()
 
 //////////////
 var mongoose = require("mongoose");
+//
 const bodyParser = require("body-parser");
+//
 const yourCollection="UserUnknown"
 const dbSchema = new mongoose.Schema({}, {
   strict: false,
@@ -46,11 +48,14 @@ app.get('/', function (request, response) {
   response.render('welcome.html');
 });
 
+////////
 app.post('/postData', (req, res) => {
-  dbModel.create(req.body)
+  dbModel.create(req.body).then(()=>{
+    console.log("written")
+  })
   res.json({status: "OK"})
 });
-
+///////
 
 // set view engigne
 app.engine('html', require('ejs').renderFile);
@@ -59,6 +64,6 @@ app.set('view engine', 'html');
 // START THE SERVER
 app.listen(3000, function () {
   console.log("Server running. To see the experiment that it is serving, visit the following address:");
-  console.log("http://localhost:%d/expNOW", 3000);
+  console.log("http://localhost:%d/expNOW", 4000);
 });
 
