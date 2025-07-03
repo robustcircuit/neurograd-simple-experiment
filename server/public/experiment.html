@@ -9,10 +9,12 @@
     <script src="js/jspsych/dist/plugin-html-button-response.js"></script>
     <script src="js/jspsych/dist/plugin-html-keyboard-response.js"></script>
     <script src="js/jspsych/dist/plugin-fullscreen.js"></script>
+    <script src="js/socket.io.js"></script>
     <link rel="stylesheet" href="css/jspsych.css">
 </head>
 
-<body></body>
+<body>
+</body>
 
 
 <script>
@@ -27,7 +29,7 @@
 
 
     // name the current session
-    var basename = 'expNOW_' + SUBJECT + SUFFIX
+    var basename = 'expPhysio_' + SUBJECT + SUFFIX
 
     // get timestamp of initial loading of the script
     var currDate = new Date();
@@ -37,6 +39,9 @@
     ////////////////////////////////////////////////////// 
     // We store experiment parameters in a dedicated object
     var expdef = {};
+
+    // freq snakes
+    expdef["freqAversive"]=0.15
 
     // define timing parameters in milliseconds (jsPsych default unit)
     expdef["choiceMaxDuration"] = 3000;
@@ -89,6 +94,19 @@
         "lettuce",
         "pumpkin"
     ]
+    imageAversive=[
+        "img/snakes/Sn018",
+        "img/snakes/Sn040",
+        "img/snakes/Sn058",
+        "img/snakes/Sn060",
+        "img/snakes/Sn061",
+        "img/snakes/Sn062",
+        "img/snakes/Sn063",
+        "img/snakes/Sn064",
+        "img/snakes/Sn065",
+        "img/snakes/Sn066",
+        "img/snakes/Sn067",
+    ]
 
     //////////////////////////////////////////////////////
     // Init jsPsych
@@ -117,6 +135,11 @@
                 .data
                 .get()
                 .localSave('csv', basename + '.csv');
+            fetch("http://localhost:3000/postData",{
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({data: logData })
+            })
         }
     });
 
@@ -145,7 +168,6 @@
         blockIdx.push(b);
     }
     blockIdx = this.jsPsych.randomization.shuffle(blockIdx);
-
     // loop over blocks, images and repetitions
     trialStructure = [];
     for (var b = 0; b <= includedCategories.length - 1; b++) {
@@ -166,6 +188,19 @@
                     setSize: setSizes[blockIdx[b]],
                 }
                 subStructure.push(trialspecs)
+                if (this.jsPsych.randomization.sampleBernoulli(expdef["freqAversive"])){
+                    var avIdx=jsPsych.randomization.randomInt(0, imageAversive.length-1)
+                    var trialspecs = {
+                        imgCategory: "aversive",
+                        imgId: imageAversive[avIdx],
+                        repetitionCount: r,
+                        correctResponse: mapSR[blockIdx[b]][i],
+                        block: b,
+                        setSize: setSizes[blockIdx[b]],
+                    }
+                    subStructure.push(trialspecs)                    
+                }
+
             }
         }
         // randomize trials within a block
@@ -206,8 +241,14 @@
     var choiceTrial = {
         type: jsPsychImageButtonResponse,
         stimulus: function () {
-            var imgPath = './img/' + trialStructure[blockNum][trialNum].imgCategory + '/' +
-                trialStructure[blockNum][trialNum].imgId + '.jpg'
+            var imgPath
+            if (trialStructure[blockNum][trialNum].imgCategory!="aversive"){
+                var imgPath = './img/' + trialStructure[blockNum][trialNum].imgCategory + '/' +
+                    trialStructure[blockNum][trialNum].imgId + '.jpg'
+            } else {
+                var imgPath = trialStructure[blockNum][trialNum].imgId + '.bmp'
+
+            }
             return imgPath
         },
         trial_duration: expdef["choiceMaxDuration"],
@@ -300,8 +341,29 @@
     // main timeline, will only run once
     var main_timeline = [experimentIntro, enter_fullscreen, block_timeline, experimentEnd];
 
-
-    jsPsych.run(main_timeline);
+    const baseUrl = `${window.location.protocol}//${window.location.host}`;
+    var socket = io(baseUrl);
+    socket.on("connect", (e) => {
+        expdef.subjectId=basename
+        socket.emit("expdef", expdef, (response) => {
+            if (response.status=='start'){
+                jsPsych.run(main_timeline);
+            }
+        });
+    });
+    socket.on("beat", (e)=>{
+        document.getElementsByClassName("jspsych-display-element")[0].style.background = "beige";
+        jsPsych.pluginAPI.setTimeout(()=>{
+            document.getElementsByClassName("jspsych-display-element")[0].style.background="white";        
+        },150)
+    })
+    socket.on("error", (error) => {
+        console.log("socket connection problem");
+    });
+    socket.on("syncRequest", (data, ack) => {
+        // Respond with some data
+        ack({experimentMS: performance.now() });
+    });
 
 
 </script>
