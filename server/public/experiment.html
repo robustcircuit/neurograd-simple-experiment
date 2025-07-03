@@ -138,7 +138,7 @@
             fetch("http://localhost:3000/postData",{
                 method: "POST",
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({data: logData })
+                body: JSON.stringify({data: jsPsych.data.get()})
             })
         }
     });

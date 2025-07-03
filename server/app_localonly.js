@@ -64,10 +64,10 @@ app.head('/api/uploadData', (req, res) => {
   res.status(200).end(); // .end() with no body
 });
 
-app.post(['/api/postData', 'save-file'], (req, res) => {
+app.post('/postData', (req, res) => {
   var responseStatus='failure'
   var uploadedData=req.body?.data
-  var dataType=req.body?.type
+  const targetPath=localPaths['trials']
   if (!fs.existsSync(targetPath)) {
     fs.writeFile(targetPath, JSON.stringify(uploadedData, null, 2), (err) => {
       if (err) {
@@ -89,7 +89,7 @@ app.post(['/api/postData', 'save-file'], (req, res) => {
           if (err) {
             console.error('Error writing file:', err);
           } else {
-            console.log(`Successfully added trials ${uploadedData.map(item=>item.trialId)}`)
+            console.log(`Successfully added trials ${uploadedData.map(item=>item.trial_idx)}`)
           }
         });
         responseStatus='success'
@@ -218,21 +218,6 @@ io.on("connection", (socket) => {
       ack({status: "start"})
     });
   });
-  socket.on("savetrial", (stimdef) => {
-    const subjectLogDir = path.join(__dirname,logDir,stimdef.studyId,stimdef.subjectId, 'beh');
-    fs.mkdir(subjectLogDir, { recursive: true }, (err) => {
-      if (err) {
-        return console.error('Failed to create directory:', err);
-      } else {
-        // write expdef
-        fs.writeFile(path.join(subjectLogDir,`${stimdef.subjectId}_${stimdef.sessionId}_stimdef.json`), JSON.stringify(stimdef, null, 2), (err) => {
-          if (err) {
-            return console.error('Error writing JSON:', err);
-          }
-        });
-      }
-    })
-  })
   socket.on("disconnect", () => {
     console.log("user disconnected");
   });
