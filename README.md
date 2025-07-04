@@ -1,4 +1,4 @@
-# Neurograd 2025 - Exercise 1
+# Neurograd 2025
 
 ### Clone this repository
 
@@ -6,7 +6,7 @@ Open a terminal in VS Code, use `cd` to navigate where you want and type:
 `git clone https://github.com/robustcircuit/neurograd-simple-experiment`
 
 
-### Install the dependencies
+### Install the NODE/JS dependencies
 
 Bavigate to the 'server' subfolder of the repository you've just cloned/unzip.
 ```
@@ -30,9 +30,9 @@ In principle, you should already be able to run the webserver and see the experi
 ```
 node app
 ```
-And by visiting the local address `http://localhost:3000/expNOW` from your browser.
+And by visiting the local address `http://localhost:3000/expRLWM` or `http://localhost:3000/expMini` from your browser.
 
-
+ 
 ### Read a bit
 
 - About the [difference between HTML, CSS and Javascript](https://www.ironhack.com/us/blog/the-differences-between-html-css-and-javascript) when it comes to web design (3 minutes)

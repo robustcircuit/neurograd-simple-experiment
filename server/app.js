@@ -36,12 +36,23 @@ app.use(express.static(__dirname + '/public/'));
 app.set('views', path.join(__dirname, '/public/'));
 
 // set routes
-app.get('/expNOW', function (request, response) {
-  response.render('experiment.html');
+app.get('/expRLWM', function (request, response) {
+  response.render('RLWM_experiment.html');
 });
 
-app.get('/dummyRoute', function (request, response) {
-  response.render('dummy.html');
+app.get('/expMini', function (request, response) {
+  response.render('minimal_experiment.html');
+});
+
+app.get('/checks', function (request, response) {
+  response.render('technical_checks.html');
+});
+
+app.get('/getToken', function (request, response) {
+  response.json({
+    token:process.env.GITHUB_IMAGE_TOKEN,
+    owner: "robustcircuit",
+    repo: "example-image-repo"})
 });
 
 app.get('/', function (request, response) {

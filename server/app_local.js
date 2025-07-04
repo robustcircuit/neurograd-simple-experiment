@@ -24,16 +24,17 @@ function getLocalIpAddress() {
   return 'localhost'; // fallback
 }
 
-let arduinoPort
-let parser
 if (process.env.ARDUINO=='true'){
-  arduinoPort = new SerialPort({
-    path: 'COM5',
-    baudRate: 9600,
-  });
-  parser = arduinoPort.pipe(new ReadlineParser({ delimiter: '\n' }));
+  let arduinoPort
+  let parser
+  if (process.env.ARDUINO=='true'){
+    arduinoPort = new SerialPort({
+      path: 'COM5',
+      baudRate: 9600,
+    });
+    parser = arduinoPort.pipe(new ReadlineParser({ delimiter: '\n' }));
+  }
 }
-
 
 // Serve Cordova browser build
 app.use(express.static(path.join(__dirname, 'public')));

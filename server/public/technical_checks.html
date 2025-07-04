@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="js/jspsych/dist/jspsych.js"></script>
+    <script src="js/UTIF.js"></script>
+    <script src="js/jspsych/dist/plugin-fullscreen.js"></script>
+    <script src="js/jspsych/dist/plugin-image-button-response.js"></script>
+</head>
+
+<body onload="UTIF.replaceIMG()">
+    <img id="my-image" />
+
+    <script>
+        fetch('getToken')
+        .then(res=>res.json())
+        .then(async (data)=>{
+            async function loadImage() {
+                console.log(data)
+                const filePath = "final_stimuli/stimulus_set_1/original_stimuli/stim_10_1_512.tiff";
+
+                const url = `https://api.github.com/repos/${data.owner}/${data.repo}/contents/${filePath}?ref=${"main"}`;
+
+                const response = await fetch(url, {
+                    headers: {
+                    'Authorization': `Bearer ${data.token}`,
+                    'Accept': 'application/vnd.github.v3.raw' // use 'raw' to fetch content directly
+                    }
+                });
+                
+                const blob = await response.blob();
+                const imageUrl = URL.createObjectURL(blob);
+
+                document.getElementById('my-image').src = imageUrl;
+            }
+            loadImage();
+            }).catch((err)=>{
+        console.log(err)
+        })
+        /*
+        const TOKEN = 'ghp_xxxYOUR_TOKEN_HERExxx'; // 🔥 Warning: Don't do this in production
+
+        async function loadImage() {
+        const owner = 'your-username';
+        const repo = 'your-private-repo';
+        const filePath = 'images/image.jpg';
+
+        const url = `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`;
+
+        const response = await fetch(url, {
+            headers: {
+            'Authorization': `Bearer ${TOKEN}`,
+            'Accept': 'application/vnd.github.v3.raw' // use 'raw' to fetch content directly
+            }
+        });
+
+        if (!response.ok) {
+            console.error('Failed to fetch image', response.statusText);
+            return;
+        }
+
+        const blob = await response.blob();
+        const imageUrl = URL.createObjectURL(blob);
+
+        document.getElementById('my-image').src = imageUrl;
+        }
+
+        loadImage();
+        */
+    </script>
+
+</body>
+
+<script>
+
+    /*
+    let last = performance.now();
+    function checkVsync() {
+    let now = performance.now();
+    console.log('Delta:', (now - last).toFixed(2), 'ms'); // Should be ~16.67ms at 60Hz
+    last = now;
+    requestAnimationFrame(checkVsync);
+    }
+    requestAnimationFrame(checkVsync);
+    */
+</script>
+
+</html>

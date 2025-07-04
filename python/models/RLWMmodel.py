@@ -5,15 +5,15 @@ def getPriors():
     priorP={
         "WMforget": {
             "type": "Trapezoidal",
-            "hyperparams":[0.0,0.025,0.1,1.0]
+            "hyperparams":[0.0,0.05,0.95,1.0]
         }            ,
         "WMcapacity":{
             "type": "Trapezoidal",
-            "hyperparams":[1.0,1.25,1.75,5.0]
+            "hyperparams":[1.0,1.05,1.25,3.0]
         },
         "WMweight":{
             "type": "Trapezoidal",
-            "hyperparams":[0.0,0.5,0.9,1.0]
+            "hyperparams":[0.0,0.9,0.95,1.0]
         },
         "Qlr+":{
             "type": "Trapezoidal",
@@ -25,7 +25,7 @@ def getPriors():
         },
         "WMbias-":{
             "type": "Trapezoidal",
-            "hyperparams":[0.0,0.5,0.99,1.0]
+            "hyperparams":[0.0,0.6,0.99,1.0]
         },
         "stickiness":{
             "type": "Trapezoidal",
@@ -33,7 +33,7 @@ def getPriors():
         },
         "invTemperature":{
             "type": "Trapezoidal",
-            "hyperparams":[0.0,1.0,25.0,50.0]
+            "hyperparams":[0.0,1.0,5.0,50.0]
         },
         "epsilon":{
             "type": "Trapezoidal",
