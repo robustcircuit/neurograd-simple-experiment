@@ -1,16 +1,14 @@
 
 let syncMode=false
 
-if (syncMode){
+if (syncMode==true){
     console.log("Hi");
     console.log("Geek");
     console.log("How are you?");
-}
-
-if (syncMode==false){
+} else {
     console.log("Hi");
     setTimeout(() => {
         console.log("Geek");
     }, 2000);
     console.log("End");
-}
+} 
