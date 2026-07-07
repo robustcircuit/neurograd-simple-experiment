@@ -142,9 +142,9 @@
       [0,2],
       [0, 1, 2],
       [0, 2, 1, 1],
-      [0, 0, 1, 1, 2, 2],
+      [0, 0, 1, 2, 2],
     ];
-    var blockTrials = [expdef.defaultRepetition, expdef.defaultRepetition, expdef.defaultRepetition];
+    var blockTrials = [expdef.defaultRepetition, expdef.defaultRepetition, expdef.defaultRepetition, expdef.defaultRepetition];
 
     // prepare block shuffling
     var blockIdx = [];
@@ -257,20 +257,25 @@
       on_start: function () {},
       on_finish: function (data) {
         if (data.response === null) {
-          data.correct = -1;
+          data.accuracy = -1;
         } else if (
           data.response == trialStructure[blockNum][trialNum].correctResponse
         ) {
-          data.correct = 1;
+          data.accuracy = 1;
         } else {
-          data.correct = 0;
+          data.accuracy = 0;
         }
-        data.blockId=blockNum
-        data.stim_rep=trialNum
-        data.setSize=trialStructure[blockNum][trialNum].setSize
-        data.stimId=trialStructure[blockNum][trialNum].imgId
-        data.category=trialStructure[blockNum][trialNum].imgCategory
-        data.subjid=basename
+
+        data['blockId']=blockNum
+        data['stim_rep']=trialNum
+        data['setSize']=trialStructure[blockNum][trialNum].setSize
+
+        /*
+        data['stimId']=trialStructure[blockNum][trialNum].imgId
+        data['category']=trialStructure[blockNum][trialNum].imgCategory
+        data['subjid']=basename
+        */
+
       },
     };
 
