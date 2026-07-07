@@ -104,7 +104,6 @@
       "pumpkin",
     ];
     imageNames['desserts'] = ["brownie","cake","dessert","donut","ice-cream_cone","milkshake"]
-    imageNames['snakes'] = ["Sn018","Sn067","Sn069","Sn076","Sn077","Sn102"]
 
     //////////////////////////////////////////////////////
     // Init jsPsych
@@ -136,15 +135,14 @@
     //////////////////////////////////////////////////////
 
     // block definition
-    var includedCategories = ["vegetables", "fruits", "desserts", "snakes"];
-    var setSizes = [2, 3, 4, 5];
+    var includedCategories = ["vegetables", "fruits", "desserts"];
+    var setSizes = [2, 3, 5];
     var mapSR = [
       [0,2],
       [0, 1, 2],
-      [0, 2, 1, 1],
       [0, 0, 1, 2, 2],
     ];
-    var blockTrials = [expdef.defaultRepetition, expdef.defaultRepetition, expdef.defaultRepetition, expdef.defaultRepetition];
+    var blockTrials = [expdef.defaultRepetition, expdef.defaultRepetition, expdef.defaultRepetition];
 
     // prepare block shuffling
     var blockIdx = [];
@@ -269,12 +267,6 @@
         data['blockId']=blockNum
         data['stim_rep']=trialNum
         data['setSize']=trialStructure[blockNum][trialNum].setSize
-
-        /*
-        data['stimId']=trialStructure[blockNum][trialNum].imgId
-        data['category']=trialStructure[blockNum][trialNum].imgCategory
-        data['subjid']=basename
-        */
 
       },
     };
