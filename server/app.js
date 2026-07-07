@@ -8,9 +8,13 @@ var mongoose = require("mongoose");
 require("dotenv").config();
 
 const yourCollection="UserUnknown"
-const dbSchema = new mongoose.Schema({}, {
-  strict: false,
-  collection: yourCollection // bind schema to specific collection
+const dbSchema = new mongoose.Schema({
+  trials: {
+    type: Array,
+    required: true
+  }
+}, {
+  collection: yourCollection
 });
 const dbModel = mongoose.model(yourCollection, dbSchema);
 mongoose.connect(process.env.MONGODB_URI);
@@ -45,11 +49,17 @@ app.get("/visual_search", function (request, response) {
 //[SOLUTION: receive data on the server]
 var bodyparser = require("body-parser");
 app.use(bodyparser.json({ limit: "50mb" }));
-app.post("/save-file", function (request, response) {
-  var datestr = new Date();
-  datestr = String(datestr.toISOString()).replace(/:|\s+|_/g, '')
-  var filename = String(request.body[request.body.length - 1].basename + "_" + datestr + ".json");
-  fs.writeFileSync(path.join(__dirname, "logdata/" + filename), JSON.stringify(request.body), (err) => {if (err) throw err; response.end(); });
+
+app.post("/save-file", async (req, res) => {
+    try {
+        await dbModel.create({
+            trials: req.body
+        });
+        res.status(200).send({ message: "success" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send(err);
+    }
 });
 
 // set view engigne
